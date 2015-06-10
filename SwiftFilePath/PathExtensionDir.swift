@@ -47,16 +47,15 @@ extension Path: SequenceType {
         assert(self.isDir,"To get children, path must be dir< \(path_string) >")
         assert(self.exists,"Dir must be exists to get children.< \(path_string) >")
         var loadError: NSError?
-        let contents =   self.fileManager.contentsOfDirectoryAtPath(path_string
-            , error: &loadError)
-        if let error = loadError {
+        if let contents =   self.fileManager.contentsOfDirectoryAtPath(path_string
+          , error: &loadError) {
+            return contents.map({ [unowned self] content in
+              return self.content(content as! String)
+            })
+        } else if let error = loadError {
             println("Error< \(error.localizedDescription) >")
         }
-        
-        return contents!.map({ [unowned self] content in
-            return self.content(content as! String)
-        })
-        
+       return nil
     }
     
     public var contents:Array<Path>? {
