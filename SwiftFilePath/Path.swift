@@ -75,15 +75,15 @@ open class Path {
             : Result(failure: error!);
     }
     
-    open func copyTo(_ toPath:Path) -> Result<Path,NSError> {
+    open func copyTo(_ toPath:Path) -> Result<Path,Error> {
         assert(self.exists,"To copy file, file MUST be exists")
-        var error: NSError?
+        var error: Error?
         let result: Bool
         do {
             try fileManager.copyItem(atPath: path_string,
                         toPath: toPath.toString())
             result = true
-        } catch let error1 as NSError {
+        } catch let error1 {
             error = error1
             result = false
         }
@@ -92,15 +92,15 @@ open class Path {
             : Result(failure: error!)
     }
     
-    open func moveTo(_ toPath:Path) -> Result<Path,NSError> {
+    open func moveTo(_ toPath:Path) -> Result<Path,Error> {
         assert(self.exists,"To move file, file MUST be exists")
-        var error: NSError?
+        var error: Error?
         let result: Bool
         do {
             try fileManager.moveItem(atPath: path_string,
                         toPath: toPath.toString())
             result = true
-        } catch let error1 as NSError {
+        } catch let error1 {
             error = error1
             result = false
         }
@@ -111,11 +111,11 @@ open class Path {
     
     private func loadAttributes() -> NSDictionary? {
         assert(self.exists,"File must be exists to load file.< \(path_string) >")
-        var loadError: NSError?
+        var loadError: Error?
         let result: [AnyHashable: Any]?
         do {
             result = try self.fileManager.attributesOfItem(atPath: path_string)
-        } catch let error as NSError {
+        } catch let error {
             loadError = error
             result = nil
         }

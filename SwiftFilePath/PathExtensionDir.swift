@@ -28,7 +28,7 @@ extension Path {
         return Path.userDomainOf(.cachesDirectory)
     }
     
-    fileprivate class func userDomainOf(_ pathEnum:FileManager.SearchPathDirectory)->Path{
+    private class func userDomainOf(_ pathEnum:FileManager.SearchPathDirectory)->Path{
         let pathString = NSSearchPathForDirectoriesInDomains(pathEnum, .userDomainMask, true)[0] 
         return Path( pathString )
     }
