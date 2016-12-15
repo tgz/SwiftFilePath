@@ -8,73 +8,73 @@
 
 public enum Result<S,F> {
     
-    case Success(ResultContainer<S>)
-    case Failure(ResultContainer<F>)
+    case success(ResultContainer<S>)
+    case failure(ResultContainer<F>)
     
     public init(success:S){
-        self = .Success( ResultContainer(success) )
+        self = .success( ResultContainer(success) )
     }
     
     public init(failure:F){
-        self = .Failure( ResultContainer(failure) )
+        self = .failure( ResultContainer(failure) )
     }
     
     public var isSuccess:Bool {
         switch self {
-            case .Success: return true
-            case .Failure: return false
+            case .success: return true
+            case .failure: return false
         }
         
     }
     
     public var isFailure:Bool {
         switch self {
-            case .Success: return false
-            case .Failure: return true
+            case .success: return false
+            case .failure: return true
         }
     }
     
     public var value:S? {
         switch self {
-        case .Success(let container):
+        case .success(let container):
             return container.content
-        case .Failure( _):
-            return .None
+        case .failure( _):
+            return .none
         }
     }
     
     public var error:F? {
         switch self {
-        case .Success( _):
-            return .None
-        case .Failure(let container):
+        case .success( _):
+            return .none
+        case .failure(let container):
             return container.content
         }
     }
     
-    public func onFailure(handler:(F) -> Void ) -> Result<S,F> {
+    public func onFailure(_ handler:(F) -> Void ) -> Result<S,F> {
         switch self {
-        case .Success( _):
+        case .success( _):
             return self
-        case .Failure(let container):
+        case .failure(let container):
             handler( container.content )
             return self
         }
     }
     
-    public func onSuccess(handler:(S) -> Void ) -> Result<S,F> {
+    public func onSuccess(_ handler:(S) -> Void ) -> Result<S,F> {
         switch self {
-        case .Success(let container):
+        case .success(let container):
             handler( container.content )
             return self
-        case .Failure( _):
+        case .failure( _):
             return self
         }
     }
    
 }
 
-public class ResultContainer<T> {
+open class ResultContainer<T> {
     let content:T
     init(_ content:T){
         self.content = content
