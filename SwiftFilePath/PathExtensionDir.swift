@@ -21,15 +21,15 @@ extension Path {
     }
     
     public class var documentsDir:Path {
-        return Path.userDomainOf(.DocumentDirectory)
+        return Path.userDomainOf(.documentDirectory)
     }
     
     public class var cacheDir:Path {
-        return Path.userDomainOf(.CachesDirectory)
+        return Path.userDomainOf(.cachesDirectory)
     }
     
-    private class func userDomainOf(pathEnum:NSSearchPathDirectory)->Path{
-        let pathString = NSSearchPathForDirectoriesInDomains(pathEnum, .UserDomainMask, true)[0] 
+    fileprivate class func userDomainOf(_ pathEnum:FileManager.SearchPathDirectory)->Path{
+        let pathString = NSSearchPathForDirectoriesInDomains(pathEnum, .userDomainMask, true)[0] 
         return Path( pathString )
     }
     
@@ -37,9 +37,9 @@ extension Path {
 #endif
 
 // Add Dir Behavior to Path by extension
-extension Path: SequenceType {
+extension Path: Sequence {
     
-    public subscript(filename: String) -> Path{
+    public subscript(filename: String) -> Path {
         get { return self.content(filename) }
     }
 
@@ -47,16 +47,16 @@ extension Path: SequenceType {
         assert(self.isDir,"To get children, path must be dir< \(path_string) >")
         assert(self.exists,"Dir must be exists to get children.< \(path_string) >")
         
-        var contents: [AnyObject]? = nil
+        var contents: [String]? = nil
         do {
-            contents = try self.fileManager.contentsOfDirectoryAtPath(path_string)
-        } catch let error as NSError {
+            contents = try self.fileManager.contentsOfDirectory(atPath: path_string)
+        } catch let error {
             print("Error< \(error.localizedDescription) >")
         }
         
-        return contents?.map({ [unowned self] content in
-            return self.content(content as! String)
-        })
+        return contents?.map { [unowned self] content in
+            return self.content(content)
+        }
         
     }
     
@@ -64,23 +64,23 @@ extension Path: SequenceType {
         return self.children
     }
     
-    public func content(path_string:NSString) -> Path {
-        return Path( (self.path_string as NSString).stringByAppendingPathComponent(path_string as String) )
+    public func content(_ path_string:String) -> Path {
+        return Path( (self.path_string as NSString).appendingPathComponent(path_string) )
     }
     
-    public func child(path:NSString) -> Path {
+    public func child(_ path:String) -> Path {
         return self.content(path)
     }
     
-    public func mkdir() -> Result<Path,NSError> {
-        var error: NSError?
+    public func mkdir() -> Result<Path,Error> {
+        var error: Error?
         let result: Bool
         do {
-            try fileManager.createDirectoryAtPath(path_string,
+            try fileManager.createDirectory(atPath: path_string,
                         withIntermediateDirectories:true,
                             attributes:nil)
             result = true
-        } catch let error1 as NSError {
+        } catch let error1 {
             error = error1
             result = false
         }
@@ -90,15 +90,15 @@ extension Path: SequenceType {
         
     }
     
-    public func generate() -> AnyGenerator<Path> {
+    public func makeIterator() -> AnyIterator<Path> {
         assert(self.isDir,"To get iterator, path must be dir< \(path_string) >")
-        let iterator = fileManager.enumeratorAtPath(path_string)
-        return AnyGenerator() {
+        let iterator = fileManager.enumerator(atPath: path_string)
+        return AnyIterator() {
             let optionalContent = iterator?.nextObject() as! String?
             if let content = optionalContent {
                 return self.content(content)
             } else {
-                return .None
+                return .none
             }
         }
     }

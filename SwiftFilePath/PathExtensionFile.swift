@@ -9,26 +9,26 @@
 // Add File Behavior to Path by extension
 extension  Path {
     
-    public var ext:NSString {
+    public var ext:String {
         return (path_string as NSString).pathExtension
     }
     
-    public func touch() -> Result<Path,NSError> {
+    public func touch() -> Result<Path,Error> {
         assert(!self.isDir,"Can NOT touch to dir")
         return self.exists
             ? self.updateModificationDate()
             : self.createEmptyFile()
     }
     
-    public func updateModificationDate(date: NSDate = NSDate() ) -> Result<Path,NSError>{
-        var error: NSError?
+    public func updateModificationDate(_ date: Date = Date() ) -> Result<Path,Error>{
+        var error: Error?
         let result: Bool
         do {
             try fileManager.setAttributes(
-                        [NSFileModificationDate :date],
-                        ofItemAtPath:path_string)
+                        [FileAttributeKey.modificationDate: date],
+                        ofItemAtPath: path_string)
             result = true
-        } catch let error1 as NSError {
+        } catch let error1 {
             error = error1
             result = false
         }
@@ -37,7 +37,7 @@ extension  Path {
             : Result(failure: error!)
     }
     
-    private func createEmptyFile() -> Result<Path,NSError>{
+    private func createEmptyFile() -> Result<Path,Error>{
         return self.writeString("")
     }
     
@@ -45,12 +45,12 @@ extension  Path {
     
     public func readString() -> String? {
         assert(!self.isDir,"Can NOT read data from  dir")
-        var readError:NSError?
+        var readError:Error?
         let read: String?
         do {
             read = try String(contentsOfFile: path_string,
-                                            encoding: NSUTF8StringEncoding)
-        } catch let error as NSError {
+                              encoding: String.Encoding.utf8)
+        } catch let error {
             readError = error
             read = nil
         }
@@ -62,16 +62,16 @@ extension  Path {
         return read
     }
     
-    public func writeString(string:String) -> Result<Path,NSError> {
+    public func writeString(_ string:String) -> Result<Path,Error> {
         assert(!self.isDir,"Can NOT write data from  dir")
-        var error: NSError?
+        var error: Error?
         let result: Bool
         do {
-            try string.writeToFile(path_string,
+            try string.write(toFile: path_string,
                         atomically:true,
-                        encoding: NSUTF8StringEncoding)
+                        encoding: String.Encoding.utf8)
             result = true
-        } catch let error1 as NSError {
+        } catch let error1 {
             error = error1
             result = false
         }
@@ -82,19 +82,19 @@ extension  Path {
     
     // MARK: - read/write NSData
     
-    public func readData() -> NSData? {
+    public func readData() -> Data? {
         assert(!self.isDir,"Can NOT read data from  dir")
-        return NSData(contentsOfFile: path_string)
+        return (try? Data(contentsOf: URL(fileURLWithPath: path_string)))
     }
     
-    public func writeData(data:NSData) -> Result<Path,NSError> {
+    public func writeData(_ data:Data) -> Result<Path,Error> {
         assert(!self.isDir,"Can NOT write data from  dir")
-        var error: NSError?
+        var error: Error?
         let result: Bool
         do {
-            try data.writeToFile(path_string, options:.DataWritingAtomic)
+            try data.write(to: URL(fileURLWithPath: path_string), options:.atomic)
             result = true
-        } catch let error1 as NSError {
+        } catch let error1 {
             error = error1
             result = false
         }
