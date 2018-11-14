@@ -20,7 +20,7 @@ open class Path {
     // MARK: - Instance properties and initializer
     
     lazy var fileManager = FileManager.default
-    open let path_string:String
+    public let path_string:String
     
     
     public init(_ p: String) {
