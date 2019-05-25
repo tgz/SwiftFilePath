@@ -71,8 +71,8 @@ open class Path {
             result = false
         }
         return result
-            ? Result(success: self)
-            : Result(failure: error!);
+            ? Result.success(self)
+            : Result.failure(error!)
     }
     
     open func copyTo(_ toPath:Path) -> Result<Path,Error> {
@@ -88,8 +88,8 @@ open class Path {
             result = false
         }
         return result
-            ? Result(success: self)
-            : Result(failure: error!)
+            ? Result.success(self)
+            : Result.failure(error!)
     }
     
     open func moveTo(_ toPath:Path) -> Result<Path,Error> {
@@ -105,8 +105,8 @@ open class Path {
             result = false
         }
         return result
-            ? Result(success: self)
-            : Result(failure: error!)
+            ? Result.success(self)
+            : Result.failure(error!)
     }
     
     private func loadAttributes() -> NSDictionary? {

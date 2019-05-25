@@ -32,9 +32,10 @@ extension  Path {
             error = error1
             result = false
         }
+        
         return result
-            ? Result(success: self)
-            : Result(failure: error!)
+            ? Result.success(self)
+            : Result.failure(error!)
     }
     
     private func createEmptyFile() -> Result<Path,Error>{
@@ -76,8 +77,8 @@ extension  Path {
             result = false
         }
         return result
-            ? Result(success: self)
-            : Result(failure: error!)
+            ? Result.success(self)
+            : Result.failure(error!)
     }
     
     // MARK: - read/write NSData
@@ -99,8 +100,8 @@ extension  Path {
             result = false
         }
         return result
-            ? Result(success: self)
-            : Result(failure: error!)
+            ? Result.success(self)
+            : Result.failure(error!)
     }
     
 }

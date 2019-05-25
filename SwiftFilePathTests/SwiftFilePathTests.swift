@@ -11,6 +11,17 @@ import SwiftFilePath
 
 // MARK: Extensions as Test utils
 
+extension Result {
+    var isSuccess: Bool {
+        switch self {
+        case .success(_):
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 extension String {
     
     func match(_ pattern: String) -> Bool {
@@ -379,44 +390,4 @@ class SwiftFilePathTests: XCTestCase {
         XCTAssertTrue( destFile.exists )
         
     }
-    
-    // MARK:
-    
-    func testSuccessResult() {
-        var callOnFailure = false
-        var callOnSuccess = false
-        let result = Result<Int,String>(success:200)
-            .onSuccess({ (value:Int) in
-                callOnSuccess = true
-                XCTAssertEqual(value,200)
-            })
-            .onFailure({ (error:String) in
-                callOnFailure = true
-            })
-        
-        XCTAssertTrue( result.isSuccess )
-        XCTAssertEqual( result.value!, 200 )
-        XCTAssertFalse( callOnFailure )
-        XCTAssertTrue( callOnSuccess )
-    }
-    
-    func testFailureResult() {
-        var callOnFailure = false
-        var callOnSuccess = false
-        let result = Result<Int,String>(failure:"NG!")
-            .onSuccess({ (value:Int) in
-                callOnSuccess = true
-            })
-            .onFailure({ (error:String) in
-                callOnFailure = true
-                XCTAssertEqual(error,"NG!")
-            })
-        
-        
-        XCTAssertTrue( result.isFailure )
-        XCTAssertEqual( result.error!, "NG!" )
-        XCTAssertTrue( callOnFailure )
-        XCTAssertFalse( callOnSuccess )
-    }
-    
 }

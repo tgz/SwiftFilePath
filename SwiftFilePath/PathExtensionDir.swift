@@ -85,8 +85,8 @@ extension Path: Sequence {
             result = false
         }
         return result
-            ? Result(success: self)
-            : Result(failure: error!)
+            ? Result.success(self)
+            : Result.failure(error!)
         
     }
     
